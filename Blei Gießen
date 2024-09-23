@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blei-Gießen Spiel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        #container {
+            margin: 50px auto;
+            width: 300px;
+        }
+        #giessen {
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #bedeutung {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        /* Feuerwerk */
+        .feuerwerk {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10;
+        }
+        .feuerwerk canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Blei-Gießen</h1>
+    <div id="container">
+        <button id="giessen">Blei gießen</button>
+        <p id="bedeutung"></p>
+    </div>
+
+    <div class="feuerwerk" id="feuerwerk">
+        <canvas id="feuerwerkCanvas"></canvas>
+    </div>
+
+    <script>
+        const figuren = [
+            {name: "Schiff", bedeutung: "Abenteuer und Reisen stehen bevor."},
+            {name: "Herz", bedeutung: "Liebe und Romantik sind auf dem Weg."},
+            {name: "Blume", bedeutung: "Glück und Wohlstand stehen dir bevor."},
+            {name: "Schwert", bedeutung: "Kämpfe und Herausforderungen werden kommen, aber du wirst siegreich sein."},
+            {name: "Krone", bedeutung: "Erfolg und Macht erwarten dich."},
+            {name: "Anker", bedeutung: "Stabilität und Sicherheit in schwierigen Zeiten."},
+            {name: "Vogel", bedeutung: "Freiheit und Unabhängigkeit."},
+            {name: "Stern", bedeutung: "Große Erfolge und Glück stehen dir bevor."},
+            {name: "Fisch", bedeutung: "Wohlstand und Überfluss."},
+            {name: "Schmetterling", bedeutung: "Veränderungen und Transformationen."},
+            {name: "Baum", bedeutung: "Wachstum und Stärke."},
+            {name: "Schlüssel", bedeutung: "Neue Möglichkeiten werden sich eröffnen."},
+            {name: "Hufeisen", bedeutung: "Viel Glück erwartet dich."},
+            {name: "Kreuz", bedeutung: "Spirituelle Transformation steht bevor."},
+            {name: "Drache", bedeutung: "Stärke und mächtige Verbündete unterstützen dich."}
+        ];
+
+        document.getElementById('giessen').addEventListener('click', function() {
+            const zufallsFigur = figuren[Math.floor(Math.random() * figuren.length)];
+            
+            // Zeigt das Ergebnis der gegossenen Figur und die Bedeutung
+            document.getElementById('bedeutung').textContent = `Du hast ein ${zufallsFigur.name} gegossen. ${zufallsFigur.bedeutung}`;
+
+            // Startet die Feuerwerksanimation
+            startFeuerwerk();
+
+            // Beendet das Feuerwerk nach 3 Sekunden
+            setTimeout(function() {
+                stopFeuerwerk();
+            }, 3000);
+        });
+
+        function startFeuerwerk() {
+            const feuerwerkElement = document.getElementById('feuerwerk');
+            feuerwerkElement.style.display = 'block';
+            const canvas = document.getElementById('feuerwerkCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particles = [];
+            const colors = ['#ff0000', '#ff6600', '#ffff00', '#33cc33', '#3399ff', '#9900ff'];
+
+            function createParticle() {
+                const particle = {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 4 + 1,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    velocityX: (Math.random() - 0.5) * 6,
+                    velocityY: (Math.random() - 0.5) * 6,
+                };
+                particles.push(particle);
+            }
+
+            function drawParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((particle, index) => {
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = particle.color;
+                    ctx.fill();
+                    particle.x += particle.velocityX;
+                    particle.y += particle.velocityY;
+                    particle.size -= 0.1;
+                    if (particle.size <= 0) {
+                        particles.splice(index, 1);
+                    }
+                });
+                if (particles.length < 50) {
+                    createParticle();
+                }
+            }
+
+            function animate() {
+                drawParticles();
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        function stopFeuerwerk() {
+            document.getElementById('feuerwerk').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
